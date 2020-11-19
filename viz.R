@@ -2,7 +2,7 @@ library(tmap)
 library(sf)
 library(tidyverse)
 
-setwd('C:/Users/elmsc/Documents/gis/hersh/Sahel-ID')
+setwd('C:/Users/elmsc/Documents/gis/hersh/Sahel-Viz')
 
 
 comparison_map <- function(x,y,name) {
@@ -28,28 +28,34 @@ make_single_map <- function(x,y,name,col,title) {
   
   tmap_save(map, filename = paste0("output/", name,"i", col, ".png"))
 }
-
+tmaptools::palette_explorer()
 make_single_map_binary <- function(x,y,name,col,labels,title) {
   country <- aoi %>% filter(COUNTRY == name)
-  map <- tm_shape(country) + tm_polygons(col = col, n=2,labels = labels, title = title)
+  map <- tm_shape(country) + tm_fill(col = col, style = "cat",palette="Set1", labels = labels, title = title) + tm_borders(col = "black",lwd = 1.5)
   map <- map + tm_layout(scale = 1, frame = FALSE) + tm_legend(legend.position = c(x, y))
   
   map
   
   tmap_save(map, filename = paste0("output/", name, "-", col, ".png"))
 }
+make_single_map_binary("left", "top", "Benin", "DATA_AVAILABILITY", c("No Data Available","Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Burkina Faso", "DATA_AVAILABILITY", c("No Data Available","Data Available"), "Data Availibility")
 
-########################################[SIDE BY SIDE MAP]#####################################################
+########################################[READ IN DATA]#####################################################
 
 sahel_loc <- 'G:/.shortcut-targets-by-id/1ihZCdFkFKljvEUetC8IiiE7JEDSGKA4J/hersh_lab/sahel/'
 
 aoi <- st_read(paste0(sahel_loc,'combined/shp/sahel.shp'))
 
 aoi <- aoi %>% mutate(DATA_PER_1000 = total/POPULATION*1000,
-                      NO_DATA = case_when(total == 0 ~ 0, TRUE ~ 1))
+                      DATA_AVAILABILITY = case_when(total > 0 ~ 1, TRUE ~ 0))
+
+aoi <- aoi %>% mutate(DATA_AVAILABILITY = factor(DATA_AVAILABILITY))
 
 countries <-  unique(aoi$COUNTRY)
 countries
+
+########################################[SIDE BY SIDE MAP]#####################################################
 
 comparison_map("left", "top", "Benin")
 comparison_map("left", "top", "Burkina Faso")
@@ -64,16 +70,16 @@ comparison_map("right", "top", "Chad")
 
 ########################################[SINGLE BINARY]#####################################################
 
-make_single_map_binary("left", "top", "Benin", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("left", "top", "Burkina Faso", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("right", "top", "Senegal", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("right", "top", "Togo","NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("left", "top", "Niger", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("left", "top", "Mauritania", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("left", "top", "Mali", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("left", "bottom", "Guinea", "NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("right", "top", "Cote dlvoire","NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
-make_single_map_binary("right", "top", "Chad","NO_DATA", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Benin", "DATA_AVAILABILITY", c("Data Available","No Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Burkina Faso", "DATA_AVAILABILITY", c("No Data Available","Data Available"), "Data Availibility")
+make_single_map_binary("right", "top", "Senegal", "DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("right", "top", "Togo","DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Niger", "DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Mauritania", "DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("left", "top", "Mali", "DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("left", "bottom", "Guinea", "DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("right", "top", "Cote dlvoire","DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
+make_single_map_binary("right", "top", "Chad","DATA_AVAILABILITY", c("No Data Available", "Data Available"), "Data Availibility")
 
 ########################################[FULL AOI PLOT]#####################################################
 
