@@ -5,7 +5,7 @@ library(tidyverse)
 setwd('C:/Users/elmsc/Documents/gis/hersh/Sahel-ID')
 
 
-make_map <- function(x,y,name) {
+comparison_map <- function(x,y,name) {
   country <- aoi %>% filter(COUNTRY == name)
   map_lights <- tm_shape(country) + tm_polygons(col = "NIGHT_LIGH", style = "jenks", title = "Night Lights")
   map_lights <- map_lights + tm_layout(scale = 1, frame = FALSE) + tm_legend(legend.position = c(x, y))
@@ -51,16 +51,16 @@ aoi <- aoi %>% mutate(DATA_PER_1000 = total/POPULATION*1000,
 countries <-  unique(aoi$COUNTRY)
 countries
 
-make_map("left", "top", "Benin")
-make_map("left", "top", "Burkina Faso")
-make_map("right", "top", "Senegal")
-make_map("right", "top", "Togo")
-make_map("left", "top", "Niger")
-make_map("left", "top", "Mauritania")
-make_map("left", "top", "Mali")
-make_map("left", "bottom", "Guinea")
-make_map("right", "top", "Cote dlvoire")
-make_map("right", "top", "Chad")
+comparison_map("left", "top", "Benin")
+comparison_map("left", "top", "Burkina Faso")
+comparison_map("right", "top", "Senegal")
+comparison_map("right", "top", "Togo")
+comparison_map("left", "top", "Niger")
+comparison_map("left", "top", "Mauritania")
+comparison_map("left", "top", "Mali")
+comparison_map("left", "bottom", "Guinea")
+comparison_map("right", "top", "Cote dlvoire")
+comparison_map("right", "top", "Chad")
 
 ########################################[SINGLE BINARY]#####################################################
 
